@@ -1,5 +1,6 @@
 import './App.css'
 import { useLiveQuery, useDocument } from 'use-fireproof'
+
 function App() {
   const response = useLiveQuery('date')
   const todos = response.docs
