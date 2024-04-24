@@ -1,10 +1,14 @@
-import './App.css'
-import { useLiveQuery, useDocument } from 'use-fireproof'
+import {useDocument, useLiveQuery} from "use-fireproof";
+import "./App.css";
 
 function App() {
-  const response = useLiveQuery('date')
+  const response = useLiveQuery('date', {limit: 10, descending: true})
   const todos = response.docs
-  const [todo, setTodo, saveTodo] = useDocument({ text: '', date: Date.now(), completed: false })
+  const [todo, setTodo, saveTodo] = useDocument(() => ({
+    text: "",
+    date: Date.now(),
+    completed: false,
+  }))
 
   return (
     <>
@@ -12,25 +16,28 @@ function App() {
         title="text"
         type="text"
         value={todo.text as string}
-        onChange={e => setTodo({ text: e.target.value })}
+        onChange={(e) => setTodo({text: e.target.value})}
       />
       <button
-        onClick={e => {
-          e.preventDefault()
-          saveTodo()
-          setTodo(false)
+        onClick={async () => {
+          await saveTodo()
+          setTodo()
         }}
       >
         Save
       </button>
       <ul>
-        {todos.map(todo => (
+        {todos.map((todo) => (
           <li key={todo._id}>
             <input
               title="completed"
               type="checkbox"
               checked={todo.completed as boolean}
-              onChange={() => useLiveQuery.database.put({ ...todo, completed: !todo.completed })}
+              onChange={() =>
+                useLiveQuery.database.put({
+                  ...todo,
+                  completed: !todo.completed,
+                })}
             />
             {todo.text as string}
           </li>
